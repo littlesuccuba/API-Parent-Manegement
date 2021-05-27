@@ -24,4 +24,5 @@ urlpatterns = [
     # API文档入口
     path('docs/', include_docs_urls(title='家长管理系统API接口文档', description='家长管理系统API文档')),
     path('child/', include('Child.urls')),
+    path('activity/', include('Child.urls')),
 ]
