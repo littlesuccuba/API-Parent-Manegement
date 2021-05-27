@@ -9,7 +9,7 @@ from tencentcloud.common.profile.client_profile import ClientProfile
 from tencentcloud.common.profile.http_profile import HttpProfile
 
 import random
-# from django.core.cache import cache
+from django.core.cache import cache
 
 class SendSms():
     def Send(phoneNum):
@@ -74,13 +74,13 @@ class SendSms():
             req.TemplateID = "956891"
             # 模板参数: 若无模板参数，则设置为空
             num = str(random.randint(1000,9999))
-            req.TemplateParamSet = [num, "5"]
-            # cache.set('yzm', num, 60*5)
-
+            req.TemplateParamSet = [num, "30"]
+            cache.set('code', num, 60*30)
+            cache.set('phone', phoneNum, 60*30)
             # 通过client对象调用DescribeInstances方法发起请求。注意请求方法名与请求对象是对应的。
             # 返回的resp是一个DescribeInstancesResponse类的实例，与请求对象对应。
             resp = client.SendSms(req)
-            resp.yzm = num
+            # resp.code = num
             return resp
 
         except TencentCloudSDKException as err:

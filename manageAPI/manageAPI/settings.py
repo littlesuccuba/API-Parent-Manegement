@@ -131,20 +131,34 @@ AUTH_USER_MODEL = 'users.User'
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
-# redis配置
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
 
-#         "LOCATION": "redis://127.0.0.1:6379",
+# 自定义用户认证
+AUTHENTICATION_BACKENDS = [
+    'users.views.CustomBackend',
+]
+    
 
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
 
-#             "CONNECTION_POOL_KWARGS": {"max_connections": 100},
+import datetime
 
-#             "DECODE_RESPONSES":True,
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),  # Token 过期时间为一周
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.util.jwt_response_payload_handler', # 规定jwt返回的数据
+}
+# redis缓存配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
 
-#         }
-#     }
-# }
+        "LOCATION": "redis://127.0.0.1:6379",
+
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100},
+
+            "DECODE_RESPONSES":True,
+
+        }
+    }
+}

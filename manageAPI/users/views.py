@@ -1,10 +1,30 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.http import HttpResponse
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from users.serializers import UserSerializer
 from users.models import User
 from users.sms import SendSms
+from django.core.cache import cache
+from django.contrib.auth.backends import ModelBackend
+from django.db.models import Q
+from django.contrib.auth import get_user_model
+
+Users = get_user_model()
+# 重写jwt认证接口
+class CustomBackend(ModelBackend):
+    # 手机号或用户名登陆
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        try:
+            # 尝试获取用户名或手机号为username的用户对象
+            user = Users.objects.get(Q(username=username) | Q(phone_num=username))
+            # 验证密码
+            if user.check_password(password):
+                return user
+        except Exception as e:
+            return None
 
 
 # 获取短信验证码
@@ -12,10 +32,13 @@ class send(View):
     def get(self,request):
         phone = request.GET.get('phone')
         code = SendSms.Send(phone)
-        if code.SendStatusSet[0].Code == 'Ok':
-            res = code.to_json_string(indent=2)
-            return HttpResponse(res)
-
+        # if code.SendStatusSet[0].Code == 'Ok':
+        #     res = code.to_json_string(indent=2)
+        #     return HttpResponse(res)
+        if not cache.get('code') is None:
+            return HttpResponse(status=200, content='发送成功')
+        else:
+            return HttpResponse(status=204, content='发送失败')
 
 
 # 用户表增删改查(已包括用户注册)
@@ -28,12 +51,28 @@ class UserViewset(ModelViewSet):
     # 指定序列化器
     serializer_class = UserSerializer
 
+    # 重写创建用户方法，先验证短信验证码正确才允许注册，否则返回403错误
+    def create(self, request, *args, **kwargs):
+        '''
+        create:
+        创建项目
+        '''
+        # 验证验证码结果：正确则注册，错误则返回异常
+        if request.data.get('code') == cache.get('code'):
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            # 每次使用完验证码后必须销毁该验证码，防止恶意注册
+            cache.set('code','', timeout=0)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response({'code': '403','message': '验证码验证失败'}, status=status.HTTP_403_FORBIDDEN)
+
     '''
     list:
     返回所有项目信息
     
-    create:
-    创建项目
 
     retrieve:
     获取某个项目的详细信息
