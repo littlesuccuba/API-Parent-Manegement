@@ -12,29 +12,40 @@ from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 
+# 导入自定义权限类
+from .permission import IsAdminUser, IsOrdinaryUser
+
 Users = get_user_model()
 # 重写jwt认证接口
 class CustomBackend(ModelBackend):
     # 手机号或用户名登陆
     def authenticate(self, request, username=None, password=None, **kwargs):
-        try:
-            # 尝试获取用户名或手机号为username的用户对象
-            user = Users.objects.get(Q(username=username) | Q(phone_num=username))
-            # 验证密码
-            if user.check_password(password):
-                return user
-        except Exception as e:
-            return None
-
+        # 获取用户对象
+        user = Users.objects.get(Q(username=username) | Q(phone_num=username))
+        # 管理员登陆
+        if user.is_staff:
+            # 如果is_staff为True，则代表此用户为管理员
+            try:
+                # 尝试验证密码
+                if user.check_password(password):
+                    return user
+            except Exception as e:
+                return None
+        # 普通用户登陆
+        else:
+            # 如果is_staff为False，则代表此用户为普通用户
+            try:
+                # 尝试验证密码
+                if user.check_password(password):
+                    return user
+            except Exception as e:
+                return None
 
 # 获取短信验证码
 class send(View):
     def get(self,request):
         phone = request.GET.get('phone')
         code = SendSms.Send(phone)
-        # if code.SendStatusSet[0].Code == 'Ok':
-        #     res = code.to_json_string(indent=2)
-        #     return HttpResponse(res)
         if not cache.get('code') is None:
             return HttpResponse(status=200, content='发送成功')
         else:

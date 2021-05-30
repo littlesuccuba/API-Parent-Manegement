@@ -20,6 +20,7 @@ from rest_framework.documentation import include_docs_urls
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
+    path('books/', include('testapp.urls')),
     path('api-auth/', include('rest_framework.urls'), name='rest_framework'),
     # API文档入口
     path('docs/', include_docs_urls(title='家长管理系统API接口文档', description='家长管理系统API文档')),
