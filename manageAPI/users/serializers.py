@@ -7,7 +7,6 @@ from django.core.cache import cache
 class UserSerializer(ModelSerializer):
     # 序列化是否可登陆字段，用户注册时默认设置为可登陆
     is_active = serializers.BooleanField(default=True, required=False,help_text='用户是否可登陆', label='是否允许登陆')
-    # 注册时密码加密方法重写
     def create(self, validated_data):
         # 将redis缓存中的手机号写入用户信息表
         validated_data['phone_num'] = cache.get('phone')
@@ -18,7 +17,7 @@ class UserSerializer(ModelSerializer):
         else:
             # 分配至普通用户组
             validated_data['groups'] = [1]
-        pass
+        # 注册时密码加密方法重写
         user = super(UserSerializer, self).create(validated_data=validated_data)
         user.set_password(validated_data['password'])
         user.save()
