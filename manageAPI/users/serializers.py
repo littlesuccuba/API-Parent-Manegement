@@ -5,6 +5,7 @@ from django.core.cache import cache
 
 # 定义用户模型序列化器
 class UserSerializer(ModelSerializer):
+    # phone_num = serializers.CharField(required=True, max_length=11)
     # 序列化是否可登陆字段，用户注册时默认设置为可登陆
     is_active = serializers.BooleanField(default=True, required=False,help_text='用户是否可登陆')
     # 注册时密码加密方法重写
