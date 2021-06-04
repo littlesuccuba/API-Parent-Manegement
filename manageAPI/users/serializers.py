@@ -27,7 +27,7 @@ class UserSerializer(ModelSerializer):
     # 修改密码时密码加密重写
     def update(self, instance, validated_data):
         user = super(UserSerializer, self).update(instance = instance, validated_data = validated_data)
-        if validated_data['password']:
+        if validated_data.get('password') is not None:
             user.set_password(validated_data['password'])
             user.save()
             return user
@@ -35,7 +35,7 @@ class UserSerializer(ModelSerializer):
         return user
     class Meta:
         model = User
-        fields = ['id', 'username','phone_num', 'password', 'email', 'name', 'identity', 'is_active','is_staff', 'groups', 'user_permissions']
+        fields = ['id', 'username','phone_num', 'password', 'email', 'name', 'identity', 'is_active','is_staff', 'groups', 'user_permissions', 'avatar']
         # fields = '__all__'
         # 在API文档中显示的字段说明
         extra_kwargs = {
@@ -83,5 +83,9 @@ class UserSerializer(ModelSerializer):
                 'label': '用户组',
                 'help_text': '用户所在用户组，该组拥有一定权限（默认普通用户）',
                 'write_only': True
+            },
+            'avatar': {
+                'label': '头像地址',
+                'help_text': '用户头像地址(可选)'
             }
         }

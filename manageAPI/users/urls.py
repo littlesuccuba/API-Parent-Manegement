@@ -7,6 +7,8 @@ from rest_framework_jwt.views import obtain_jwt_token
 router = DefaultRouter()
 # 用户信息视图集
 router.register('user', views.UserViewset)
+# 修改头像
+router.register('editavatar',views.UserAvatarUpload)
 
 urlpatterns = [
     # jwt 登录视图，使用jwt自动签发token

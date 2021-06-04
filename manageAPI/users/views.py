@@ -11,6 +11,7 @@ from django.core.cache import cache
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.contrib.auth import get_user_model
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 # 导入自定义权限类
 from .permission import IsAdminUser, IsOrdinaryUser
@@ -100,3 +101,15 @@ class UserViewset(ModelViewSet):
     interfaces:
     获取指定项目的所有接口信息
     '''
+
+# 用户头像上传
+class UserAvatarUpload(ModelViewSet):
+    # 用户头像上传需权限与认证
+    authentication_classes = [JSONWebTokenAuthentication]
+    permission_classes = [IsOrdinaryUser]
+    # 指定查询集
+    queryset = User.objects.all()
+    # 指定序列化器
+    serializer_class = UserSerializer
+    
+
