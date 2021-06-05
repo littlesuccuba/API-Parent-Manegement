@@ -166,12 +166,12 @@ CORs_ALLOW_HEADERS= (
 
 
 
-# import datetime
-#
-# JWT_AUTH = {
-#     # 设置jwt签发Token过期时间为1天
-#     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
-# }
+import datetime
+
+JWT_AUTH = {
+    # 设置jwt签发Token过期时间为1天
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+}
 # redis配置
 # CACHES = {
 #     "default": {
