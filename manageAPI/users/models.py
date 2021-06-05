@@ -11,8 +11,8 @@ class User(AbstractUser):
     name = models.CharField(max_length=30, default='未命名', unique=False)
     # 用户身份
     identity = models.CharField(choices=(
-        ('1','普通用户'),
-        ('2','管理员')
+        ('1', '普通用户'),
+        ('2', '管理员')
     ), default='1', max_length=255)
     # 是否允许登陆
     is_active = models.BooleanField(default=True)

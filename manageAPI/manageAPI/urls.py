@@ -25,5 +25,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls'), name='rest_framework'),
     # API文档入口
     path('docs/', include_docs_urls(title='家长管理系统API接口文档', description='家长管理系统API文档')),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+    path('child/', include('Child.urls')),
+    path('activity/', include('activity.urls')),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
