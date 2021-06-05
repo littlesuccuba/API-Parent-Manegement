@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from users.util import UploadFilesReName
 # Create your models here.
 
 # 重写用户表、需要继承 AbstractUser
@@ -15,4 +16,7 @@ class User(AbstractUser):
     ), default='1', max_length=255)
     # 是否允许登陆
     is_active = models.BooleanField(default=True)
+    # 用户头像地址
+    avatar = models.ImageField(null=True, upload_to=UploadFilesReName.rename)
+
 
