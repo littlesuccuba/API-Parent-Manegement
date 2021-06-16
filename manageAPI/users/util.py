@@ -23,7 +23,7 @@ class UploadFilesReName():
         path = base_dir+instans.username+'\\'
         # 根据用户来创建文件夹，如果已存在则不创建
         if not os.path.exists(path):
-            os.mkdir(path)
+            os.makedirs(path)
         # 获取instans内的用户id与用户名
         obj = {
             "id": instans.id,

@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.mixins import CreateModelMixin
 from users.serializers import UserSerializer
 from users.models import User
 from users.sms import SendSms
@@ -12,9 +13,11 @@ from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework.permissions import IsAdminUser
 
 # 导入自定义权限类
-from .permission import IsAdminUser, IsOrdinaryUser
+# IsOrdinaryUser
+from .permission import IsOrdinaryUser
 
 Users = get_user_model()
 # 重写jwt认证接口
@@ -52,6 +55,16 @@ class send(View):
         else:
             return HttpResponse(status=204, content='发送失败')
 
+# 用户注册接口2
+class UserRegister(ModelViewSet):
+    # 管理面板内注册需权限与认证
+    authentication_classes = [JSONWebTokenAuthentication]
+    permission_classes = [IsAdminUser]
+    # 指定查询集
+    queryset = User.objects.all()
+    # 指定序列化器
+    serializer_class = UserSerializer
+    
 
 # 用户表增删改查(已包括用户注册)
 class UserViewset(ModelViewSet):

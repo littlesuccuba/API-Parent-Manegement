@@ -1,4 +1,5 @@
 from django.db import models
+from .util import UploadFilesReName
 
 
 # Create your models here.
@@ -8,7 +9,7 @@ class Child_Info(models.Model):
     name = models.CharField(max_length=20)
     sex = models.CharField(max_length=20)
     age = models.CharField(max_length=20)
-    image = models.CharField(max_length=255)
+    image = models.ImageField(max_length=255, upload_to=UploadFilesReName.rename, null=True)
 
 
 # 创建班级信息表

@@ -23,6 +23,7 @@ lazy-object-proxy==1.4.3
 MarkupSafe==2.0.1
 mccabe==0.6.1
 mysql-connector==2.2.9
+Pillow==8.2.0
 pycparser==2.20
 PyJWT==1.7.1
 pylint==2.6.0

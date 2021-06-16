@@ -10,6 +10,8 @@ router.register('user', views.UserViewset)
 # 修改头像
 router.register('editavatar',views.UserAvatarUpload)
 
+router.register('createuser', views.UserRegister)
+
 urlpatterns = [
     # jwt 登录视图，使用jwt自动签发token
     path('login/', obtain_jwt_token),

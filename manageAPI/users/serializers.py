@@ -10,9 +10,11 @@ class UserSerializer(ModelSerializer):
     is_active = serializers.BooleanField(default=True, required=False,help_text='用户是否可登陆', label='是否允许登陆')
     def create(self, validated_data):
         # 将redis缓存中的手机号写入用户信息表
-        validated_data['phone_num'] = cache.get('phone')
+        # print(validated_data.get('is_staff'))
+        if cache.get('phone') is not None:
+            validated_data['phone_num'] = cache.get('phone')
         # 如果有is_staff属性则为管理员用户，否则为普通用户
-        if validated_data['is_staff']:
+        if validated_data.get('is_staff'):
             # 分配至管理员用户组
             validated_data['groups'] = [2]
         else:
@@ -23,7 +25,8 @@ class UserSerializer(ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         # 创建用户成功后销毁redis缓存
-        cache.set('phone', '', timeout=0)
+        if cache.get('phone') is not None:
+            cache.set('phone', '', timeout=0)
         return user
     # 修改密码时密码加密重写
     def update(self, instance, validated_data):
@@ -32,6 +35,14 @@ class UserSerializer(ModelSerializer):
             user.set_password(validated_data['password'])
             user.save()
             return user
+        # 如果有is_staff属性则为管理员用户，否则为普通用户
+        # print(validated_data.get('is_staff'))
+        if validated_data.get('is_staff'):
+            # 分配至管理员用户组
+            validated_data['groups'] = [2]
+        else:
+            # 分配至普通用户组
+            validated_data['groups'] = [1]
         user.save()
         return user
     class Meta:
@@ -73,7 +84,7 @@ class UserSerializer(ModelSerializer):
                 'help_text': '手机号码（必须）'
             },
             'is_staff': {
-                'write_only': True
+                
             },
             'user_permissions': {
                 'label': '用户权限',
